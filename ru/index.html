@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Memory Layer for Teams</title>
+    <style>
+      :root {
+        --paper: rgba(255, 251, 244, 0.84);
+        --ink: #1f1c18;
+        --muted: #61594d;
+        --line: rgba(63, 50, 37, 0.12);
+        --accent: #0e7c66;
+        --accent-2: #d96c3f;
+        --accent-3: #f1bc57;
+        --shadow: 0 24px 80px rgba(32, 22, 13, 0.12);
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(241, 188, 87, 0.35), transparent 28%),
+          radial-gradient(circle at top right, rgba(14, 124, 102, 0.18), transparent 26%),
+          linear-gradient(180deg, #f6f0e4 0%, #efe7d7 100%);
+      }
+      .page { width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 56px; }
+      .hero { position: relative; overflow: hidden; padding: 28px; border: 1px solid var(--line); border-radius: 28px; background: linear-gradient(135deg, rgba(255, 251, 244, 0.94), rgba(247, 241, 231, 0.84)); box-shadow: var(--shadow); }
+      .hero::after { content: ""; position: absolute; right: -80px; top: -50px; width: 280px; height: 280px; border-radius: 50%; background: radial-gradient(circle, rgba(14, 124, 102, 0.16), rgba(14, 124, 102, 0)); pointer-events: none; }
+      .eyebrow { display: inline-block; margin-bottom: 16px; padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(14, 124, 102, 0.22); background: rgba(14, 124, 102, 0.08); color: var(--accent); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
+      h1, h2, h3, .display { margin: 0; font-weight: 600; line-height: 0.95; }
+      .display { max-width: 860px; font-size: clamp(54px, 10vw, 112px); letter-spacing: -0.05em; }
+      .hero-copy { max-width: 680px; margin-top: 20px; font-size: clamp(19px, 2.5vw, 26px); line-height: 1.35; color: var(--muted); }
+      .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+      .button, .button-secondary { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 18px; border-radius: 14px; text-decoration: none; font-size: 15px; }
+      .button { background: var(--ink); color: #fff9f1; }
+      .button-secondary { border: 1px solid var(--line); color: var(--ink); background: rgba(255, 255, 255, 0.45); }
+      .hero-grid { display: grid; grid-template-columns: 1.25fr 0.9fr; gap: 18px; margin-top: 28px; }
+      .panel { border: 1px solid var(--line); border-radius: 24px; background: var(--paper); backdrop-filter: blur(10px); }
+      .memory-card { padding: 22px; }
+      .mini-label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+      .memory-list { display: grid; gap: 12px; margin-top: 16px; }
+      .memory-item { padding: 16px; border-radius: 18px; background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(63, 50, 37, 0.08); }
+      .memory-item strong { display: block; margin-bottom: 6px; font-size: 16px; }
+      .memory-item span { color: var(--muted); line-height: 1.45; }
+      .briefing-card { padding: 22px; background: linear-gradient(180deg, rgba(14, 124, 102, 0.1), rgba(255, 251, 244, 0.86)), var(--paper); }
+      .briefing-card h2 { font-size: 28px; letter-spacing: -0.03em; }
+      .briefing-list { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+      .briefing-list li { padding: 12px 14px; border-left: 4px solid var(--accent-2); background: rgba(255, 255, 255, 0.6); border-radius: 0 12px 12px 0; color: var(--ink); }
+      .section { margin-top: 22px; padding: 26px; }
+      .section h2 { font-size: clamp(30px, 5vw, 54px); letter-spacing: -0.05em; }
+      .section-intro { max-width: 760px; margin-top: 10px; font-size: 18px; line-height: 1.5; color: var(--muted); }
+      .grid-3, .grid-2 { display: grid; gap: 16px; margin-top: 22px; }
+      .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .feature, .metric, .workflow-step { padding: 20px; }
+      .feature h3, .metric h3, .workflow-step h3 { font-size: 24px; letter-spacing: -0.04em; }
+      .feature p, .metric p, .workflow-step p { margin: 12px 0 0; color: var(--muted); line-height: 1.55; }
+      .workflow-step { position: relative; padding-top: 52px; }
+      .workflow-step::before { content: attr(data-step); position: absolute; top: 16px; left: 20px; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-3); font-size: 13px; }
+      .quote { margin-top: 22px; padding: 24px; border-radius: 24px; background: linear-gradient(135deg, rgba(217, 108, 63, 0.12), rgba(255, 251, 244, 0.88)); }
+      .quote p { margin: 0; font-size: clamp(22px, 4vw, 40px); line-height: 1.15; letter-spacing: -0.04em; }
+      .quote small { display: block; margin-top: 12px; color: var(--muted); font-size: 14px; }
+      .footer { margin-top: 22px; padding: 24px 26px; display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+      .footer p { margin: 0; color: var(--muted); }
+      @media (max-width: 900px) {
+        .hero-grid, .grid-3, .grid-2, .footer { grid-template-columns: 1fr; display: grid; }
+        .page { width: min(100% - 20px, 1160px); padding-top: 12px; }
+        .hero, .section, .footer { padding: 20px; border-radius: 22px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <span class="eyebrow">Общая AI-инфраструктура для команд</span>
+        <h1 class="display">У команды уже есть знания. У неё нет общей памяти.</h1>
+        <p class="hero-copy">Memory Layer превращает чаты, встречи, документы и CRM-активность в структурированную, permission-aware систему памяти для команд и AI-агентов.</p>
+        <div class="hero-actions">
+          <a class="button" href="#product">Посмотреть продукт</a>
+          <a class="button-secondary" href="#workflow">Как это работает</a>
+          <a class="button-secondary" href="../">EN Version</a>
+        </div>
+        <div class="hero-grid">
+          <article class="panel memory-card">
+            <div class="mini-label">Живая память команды</div>
+            <div class="memory-list">
+              <div class="memory-item"><strong>Зафиксировано решение</strong><span>Онбординг клиента переводится с ручного согласования на AI-assisted triage со следующего понедельника.</span></div>
+              <div class="memory-item"><strong>Запомнено предпочтение</strong><span>Acme Logistics хочет еженедельные summary, короткие письма и без WhatsApp-коммуникации.</span></div>
+              <div class="memory-item"><strong>Обнаружен риск</strong><span>Исключение по pricing было обещано на звонке, но ещё не отражено в черновике контракта.</span></div>
+            </div>
+          </article>
+          <aside class="panel briefing-card">
+            <div class="mini-label">Бриф перед встречей</div>
+            <h2>Что нужно знать до звонка</h2>
+            <ul class="briefing-list">
+              <li>2 нерешённых блокера с последнего implementation review</li>
+              <li>1 опасение клиента по data retention и access control</li>
+              <li>3 обязательства, уже данные sales и support-командой</li>
+              <li>Следующий шаг: подтвердить security scope до расширения seats</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+      <section class="panel section" id="product">
+        <h2>Что это за продукт</h2>
+        <p class="section-intro">Это memory platform для AI-native компаний. Она ingest-ит командную активность, извлекает решения, факты, задачи и связи, а затем отдаёт этот контекст через поиск, брифы и API для агентов.</p>
+        <div class="grid-3">
+          <article class="panel feature"><h3>Capture</h3><p>Подключает транскрипты, чаты, документы и CRM. Система сама понимает, что важно, вместо того чтобы заставлять команду вручную вести wiki.</p></article>
+          <article class="panel feature"><h3>Structure</h3><p>Преобразует сырой поток работы в memory objects, связанные с клиентами, проектами, людьми и открытыми вопросами, с цитатами и временным контекстом.</p></article>
+          <article class="panel feature"><h3>Activate</h3><p>Вкладывает релевантный контекст во внутренние copilots, support-tools, meeting prep, onboarding и ежедневную операционку.</p></article>
+        </div>
+      </section>
+      <section class="panel section" id="workflow">
+        <h2>Как это работает</h2>
+        <p class="section-intro">Продукт стоит между операционными данными компании и людьми или агентами, которым нужен надёжный контекст в момент работы.</p>
+        <div class="grid-2">
+          <article class="panel workflow-step" data-step="1"><h3>Ingest командной активности</h3><p>Встречи, голосовые заметки, чаты, заметки, CRM-обновления и документы попадают в единую memory pipeline.</p></article>
+          <article class="panel workflow-step" data-step="2"><h3>Извлечение memory signals</h3><p>Платформа выявляет решения, обещания, факты, задачи, предпочтения, блокеры и account-specific контекст.</p></article>
+          <article class="panel workflow-step" data-step="3"><h3>Построение memory graph</h3><p>Каждый memory item связывается с людьми, аккаунтами, проектами, встречами и исходными источниками с таймстампами и правами доступа.</p></article>
+          <article class="panel workflow-step" data-step="4"><h3>Возврат контекста по запросу</h3><p>Пользователи и AI-агенты получают grounded answers, timelines и briefings с прозрачной ссылкой на источник.</p></article>
+        </div>
+      </section>
+      <section class="panel section">
+        <h2>Почему за это будут платить</h2>
+        <p class="section-intro">У большинства команд нет проблемы с объёмом знаний. У них проблема с памятью. Контекст существует, но он размазан, устаревает и недоступен в момент действия.</p>
+        <div class="grid-3">
+          <article class="panel metric"><h3>Быстрее онбординг</h3><p>Новые сотрудники перестают задавать одни и те же вопросы, потому что рабочая память компании становится живой и доступной.</p></article>
+          <article class="panel metric"><h3>Лучше AI-результаты</h3><p>Внутренние ассистенты отвечают с контекстом компании, а не общими догадками.</p></article>
+          <article class="panel metric"><h3>Меньше потерянного контекста</h3><p>Команда не теряет обещания, клиентские предпочтения и историю решений между каналами и людьми.</p></article>
+        </div>
+        <div class="quote"><p>Не ещё одна knowledge base. А memory system, работающая на скорости команды.</p><small>Нормальная positioning line для pitch, лендинга или startup application</small></div>
+      </section>
+      <section class="panel section">
+        <h2>Стартовая поверхность продукта</h2>
+        <p class="section-intro">Первая версия не обязана быть большой. Она должна после одной демки выглядеть неизбежной.</p>
+        <div class="grid-2">
+          <article class="panel feature"><h3>Workspace Search</h3><p>Вопросы вроде “что мы обещали этому клиенту?” или “что изменилось после последнего roadmap call?”</p></article>
+          <article class="panel feature"><h3>Account Memory Pages</h3><p>Постоянные memory timeline по клиенту, лиду или проекту с цитатами, задачами и рисками.</p></article>
+          <article class="panel feature"><h3>Meeting Briefings</h3><p>One-click подготовка к звонку: последние решения, блокеры, предыдущие обещания и suggested next steps.</p></article>
+          <article class="panel feature"><h3>Agent API</h3><p>Структурированная выдача контекста для внутренних copilots, support bots и workflow automation.</p></article>
+        </div>
+      </section>
+      <footer class="panel footer">
+        <p>Концепт-страница продукта: AI Memory Layer for Teams</p>
+        <p>Угол: B2B SaaS, общая память команды, AI-native infrastructure. <a href="../">EN</a></p>
+      </footer>
+    </main>
+  </body>
+</html>

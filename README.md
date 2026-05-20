@@ -8,6 +8,10 @@ GitHub Pages:
 
 `https://chnurok.github.io/startup-ai-memory-layer/`
 
+Russian version:
+
+`https://chnurok.github.io/startup-ai-memory-layer/ru/`
+
 ## What's Inside
 
 - `index.html` — sample landing page / product page
