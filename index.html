@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memory Layer for Teams</title>
+    <style>
+      :root {
+        --bg: #f3efe6;
+        --paper: rgba(255, 251, 244, 0.84);
+        --ink: #1f1c18;
+        --muted: #61594d;
+        --line: rgba(63, 50, 37, 0.12);
+        --accent: #0e7c66;
+        --accent-2: #d96c3f;
+        --accent-3: #f1bc57;
+        --shadow: 0 24px 80px rgba(32, 22, 13, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(241, 188, 87, 0.35), transparent 28%),
+          radial-gradient(circle at top right, rgba(14, 124, 102, 0.18), transparent 26%),
+          linear-gradient(180deg, #f6f0e4 0%, #efe7d7 100%);
+      }
+
+      .page {
+        width: min(1160px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 24px 0 56px;
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        padding: 28px;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: linear-gradient(135deg, rgba(255, 251, 244, 0.94), rgba(247, 241, 231, 0.84));
+        box-shadow: var(--shadow);
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        right: -80px;
+        top: -50px;
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(14, 124, 102, 0.16), rgba(14, 124, 102, 0));
+        pointer-events: none;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        margin-bottom: 16px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(14, 124, 102, 0.22);
+        background: rgba(14, 124, 102, 0.08);
+        color: var(--accent);
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      .display {
+        margin: 0;
+        font-weight: 600;
+        line-height: 0.95;
+      }
+
+      .display {
+        max-width: 860px;
+        font-size: clamp(54px, 10vw, 112px);
+        letter-spacing: -0.05em;
+      }
+
+      .hero-copy {
+        max-width: 680px;
+        margin-top: 20px;
+        font-size: clamp(19px, 2.5vw, 26px);
+        line-height: 1.35;
+        color: var(--muted);
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .button,
+      .button-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 48px;
+        padding: 0 18px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-size: 15px;
+      }
+
+      .button {
+        background: var(--ink);
+        color: #fff9f1;
+      }
+
+      .button-secondary {
+        border: 1px solid var(--line);
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.45);
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.25fr 0.9fr;
+        gap: 18px;
+        margin-top: 28px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--paper);
+        backdrop-filter: blur(10px);
+      }
+
+      .memory-card {
+        padding: 22px;
+      }
+
+      .mini-label {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .memory-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .memory-item {
+        padding: 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(63, 50, 37, 0.08);
+      }
+
+      .memory-item strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 16px;
+      }
+
+      .memory-item span {
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      .briefing-card {
+        padding: 22px;
+        background:
+          linear-gradient(180deg, rgba(14, 124, 102, 0.1), rgba(255, 251, 244, 0.86)),
+          var(--paper);
+      }
+
+      .briefing-card h2 {
+        font-size: 28px;
+        letter-spacing: -0.03em;
+      }
+
+      .briefing-list {
+        margin: 16px 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 10px;
+      }
+
+      .briefing-list li {
+        padding: 12px 14px;
+        border-left: 4px solid var(--accent-2);
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 0 12px 12px 0;
+        color: var(--ink);
+      }
+
+      .section {
+        margin-top: 22px;
+        padding: 26px;
+      }
+
+      .section h2 {
+        font-size: clamp(30px, 5vw, 54px);
+        letter-spacing: -0.05em;
+      }
+
+      .section-intro {
+        max-width: 760px;
+        margin-top: 10px;
+        font-size: 18px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+
+      .grid-3,
+      .grid-2 {
+        display: grid;
+        gap: 16px;
+        margin-top: 22px;
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .feature,
+      .metric,
+      .workflow-step {
+        padding: 20px;
+      }
+
+      .feature h3,
+      .metric h3,
+      .workflow-step h3 {
+        font-size: 24px;
+        letter-spacing: -0.04em;
+      }
+
+      .feature p,
+      .metric p,
+      .workflow-step p {
+        margin: 12px 0 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .workflow-step {
+        position: relative;
+        padding-top: 52px;
+      }
+
+      .workflow-step::before {
+        content: attr(data-step);
+        position: absolute;
+        top: 16px;
+        left: 20px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--accent-3);
+        font-size: 13px;
+      }
+
+      .quote {
+        margin-top: 22px;
+        padding: 24px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, rgba(217, 108, 63, 0.12), rgba(255, 251, 244, 0.88));
+      }
+
+      .quote p {
+        margin: 0;
+        font-size: clamp(22px, 4vw, 40px);
+        line-height: 1.15;
+        letter-spacing: -0.04em;
+      }
+
+      .quote small {
+        display: block;
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .footer {
+        margin-top: 22px;
+        padding: 24px 26px;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+      }
+
+      .footer p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      @media (max-width: 900px) {
+        .hero-grid,
+        .grid-3,
+        .grid-2,
+        .footer {
+          grid-template-columns: 1fr;
+          display: grid;
+        }
+
+        .page {
+          width: min(100% - 20px, 1160px);
+          padding-top: 12px;
+        }
+
+        .hero,
+        .section,
+        .footer {
+          padding: 20px;
+          border-radius: 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <span class="eyebrow">Shared AI Infrastructure For Teams</span>
+        <h1 class="display">Your team already has the knowledge. It just has no memory.</h1>
+        <p class="hero-copy">
+          Memory Layer turns chats, meetings, docs, and CRM activity into a structured, permission-aware memory system for teams and AI agents.
+        </p>
+        <div class="hero-actions">
+          <a class="button" href="#product">See the Product</a>
+          <a class="button-secondary" href="#workflow">How It Works</a>
+        </div>
+
+        <div class="hero-grid">
+          <article class="panel memory-card">
+            <div class="mini-label">Live Team Memory</div>
+            <div class="memory-list">
+              <div class="memory-item">
+                <strong>Decision captured</strong>
+                <span>Client onboarding flow moves from manual approval to AI-assisted triage starting Monday.</span>
+              </div>
+              <div class="memory-item">
+                <strong>Preference remembered</strong>
+                <span>Acme Logistics wants weekly summaries, short emails, and no WhatsApp communication.</span>
+              </div>
+              <div class="memory-item">
+                <strong>Risk flagged</strong>
+                <span>Pricing exception was promised in the sales call but not yet reflected in the contract draft.</span>
+              </div>
+            </div>
+          </article>
+
+          <aside class="panel briefing-card">
+            <div class="mini-label">Pre-Meeting Brief</div>
+            <h2>Before you join the call</h2>
+            <ul class="briefing-list">
+              <li>2 unresolved blockers from the last implementation review</li>
+              <li>1 client concern around data retention and access control</li>
+              <li>3 commitments already made by sales and support</li>
+              <li>Suggested next step: confirm security scope before expanding seats</li>
+            </ul>
+          </aside>
+        </div>
+      </section>
+
+      <section class="panel section" id="product">
+        <h2>What the end product is</h2>
+        <p class="section-intro">
+          A workspace memory platform for AI-native companies. It ingests team activity, extracts decisions, facts, tasks, and relationships, then serves that context back through search, briefings, and agent-ready APIs.
+        </p>
+        <div class="grid-3">
+          <article class="panel feature">
+            <h3>Capture</h3>
+            <p>Connect transcripts, chats, docs, and CRM records. The system detects what matters instead of asking employees to maintain a wiki by hand.</p>
+          </article>
+          <article class="panel feature">
+            <h3>Structure</h3>
+            <p>Convert raw activity into memory objects linked to clients, projects, people, and open questions, with citations and time context.</p>
+          </article>
+          <article class="panel feature">
+            <h3>Activate</h3>
+            <p>Inject the right context into internal copilots, support tools, meeting prep, onboarding flows, and daily decision-making.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel section" id="workflow">
+        <h2>How it works</h2>
+        <p class="section-intro">
+          The product sits between the company’s operational data and the humans or agents who need reliable context.
+        </p>
+        <div class="grid-2">
+          <article class="panel workflow-step" data-step="1">
+            <h3>Ingest team activity</h3>
+            <p>Meetings, voice notes, chats, notes, CRM updates, and internal docs enter one unified memory pipeline.</p>
+          </article>
+          <article class="panel workflow-step" data-step="2">
+            <h3>Extract memory signals</h3>
+            <p>The platform identifies decisions, promises, facts, tasks, preferences, blockers, and account-specific context.</p>
+          </article>
+          <article class="panel workflow-step" data-step="3">
+            <h3>Build memory graph</h3>
+            <p>Each memory item is linked to people, accounts, projects, meetings, and source evidence with timestamps and permissions.</p>
+          </article>
+          <article class="panel workflow-step" data-step="4">
+            <h3>Return context on demand</h3>
+            <p>Users and AI agents receive grounded answers, timelines, and briefings with a clear trace back to source material.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel section">
+        <h2>Why teams pay for it</h2>
+        <p class="section-intro">
+          Most teams do not have a knowledge problem. They have a memory problem. Context exists, but it is scattered, stale, and unavailable at the moment of action.
+        </p>
+        <div class="grid-3">
+          <article class="panel metric">
+            <h3>Faster onboarding</h3>
+            <p>New hires stop asking the same questions because the company’s operating memory is searchable and current.</p>
+          </article>
+          <article class="panel metric">
+            <h3>Better AI outputs</h3>
+            <p>Internal assistants answer with company-specific context instead of generic guesses.</p>
+          </article>
+          <article class="panel metric">
+            <h3>Less dropped context</h3>
+            <p>Teams keep track of prior commitments, client preferences, and decision history across channels.</p>
+          </article>
+        </div>
+        <div class="quote">
+          <p>Not another knowledge base. A memory system that works at the speed of the team.</p>
+          <small>Positioning line for pitch, landing page, or startup application</small>
+        </div>
+      </section>
+
+      <section class="panel section">
+        <h2>Initial product surface</h2>
+        <p class="section-intro">
+          The first version does not need to be huge. It needs to feel inevitable after one demo.
+        </p>
+        <div class="grid-2">
+          <article class="panel feature">
+            <h3>Workspace Search</h3>
+            <p>Ask natural questions like “What did we promise this client?” or “What changed after the last roadmap call?”</p>
+          </article>
+          <article class="panel feature">
+            <h3>Account Memory Pages</h3>
+            <p>Persistent memory timelines for each client, lead, or project with citations, tasks, and risks.</p>
+          </article>
+          <article class="panel feature">
+            <h3>Meeting Briefings</h3>
+            <p>One-click prep before calls: latest decisions, unresolved blockers, prior commitments, and suggested next steps.</p>
+          </article>
+          <article class="panel feature">
+            <h3>Agent API</h3>
+            <p>Structured context retrieval for internal AI copilots, support bots, and workflow automations.</p>
+          </article>
+        </div>
+      </section>
+
+      <footer class="panel footer">
+        <p>Concept product page for: AI Memory Layer for Teams</p>
+        <p>Angle: B2B SaaS, shared team memory, AI-native infrastructure</p>
+      </footer>
+    </main>
+  </body>
+</html>
